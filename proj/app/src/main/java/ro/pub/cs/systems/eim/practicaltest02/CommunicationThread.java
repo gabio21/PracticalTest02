@@ -53,7 +53,12 @@ public class CommunicationThread extends Thread {
             }
             Log.i(Constants.COMMUNICATION_THREAD_TAG, "[COMMUNICATION THREAD] Waiting for parameters from client (city / information type!");
 
-            printWriter.println("result");
+            String currencyNeeded = bufferedReader.readLine();
+
+            if(currencyNeeded.equals("USD"))
+                printWriter.println("USD value is 12000");
+            else
+                printWriter.print("EUR value is 9000");
             printWriter.flush();
         } catch (IOException ioException) {
             Log.e(Constants.COMMUNICATION_THREAD_TAG, "[COMMUNICATION THREAD] An exception has occurred: " + ioException.getMessage());
