@@ -55,6 +55,39 @@ public class CommunicationThread extends Thread {
 
             String currencyNeeded = bufferedReader.readLine();
 
+            String currencyValue = "";
+            Log.i(Constants.COMMUNICATION_THREAD_TAG, "[COMMUNICATION THREAD] Getting the information from the webservice...");
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost("https://api.coindesk.com/v1/bpi/currentprice/EUR.json");
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("", ""));
+            UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+            httpPost.setEntity(urlEncodedFormEntity);
+            ResponseHandler<String> responseHandler = new BasicResponseHandler();
+            String pageSourceCode = httpClient.execute(httpPost, responseHandler);
+            if (pageSourceCode == null) {
+                Log.e(Constants.COMMUNICATION_THREAD_TAG, "[COMMUNICATION THREAD] Error getting the information from the webservice!");
+                return;
+            }
+            Document document = Jsoup.parse(pageSourceCode);
+            Element element = document.child(0);
+            Elements elements = element.getElementsByTag(currencyNeeded);
+            for (Element script : elements) {
+                String scriptData = script.data();
+                if (scriptData.contains("rate")) {
+                    currencyValue = scriptData.substring(scriptData.indexOf("rate"));
+                    break;
+                }
+            }
+
+        if (currencyValue.isEmpty()) {
+            Log.e(Constants.COMMUNICATION_THREAD_TAG, "[COMMUNICATION THREAD] CurrencyValue is null!");
+            return;
+        }
+
+
+
+
             if(currencyNeeded.equals("USD"))
                 printWriter.println("USD value is 12000");
             else
